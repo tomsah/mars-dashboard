@@ -9,18 +9,24 @@
     "type": "git",
     "url": "https://github.com/tomsah/mars-dashboard"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run build"
+    }
+  },
   "scripts": {
     "build": "npm run webpack -- --mode production",
     "check-format": "npm run prettier -- --list-different",
     "dev": "yarn run webpack-dev-server  --  --hot --open --mode development",
     "format": "npm run prettier -- --write",
     "lint": "eslint --ignore-path .eslintignore .",
-    "prettier": "prettier --ignore-path .eslintignore \"**/*.+(js |json)\" ",
+    "prettier": "prettier --write --ignore-path .eslintignore \"**/*.(js,json)\" ",
     "setup": "npm install && npm run validate",
     "server": "node ./src/server/index.js",
     "server:dev": "nodemon ./src/server/index.js",
     "test": "jest --no-cache",
     "test:watch": "jest --watch",
+    "validate": "npm-run-all --parallel check-format test build",
     "webpack": "webpack",
     "webpack-dev-server": "webpack serve"
   },
@@ -31,14 +37,16 @@
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.1",
     "eslint": "^7.17.0",
-    "eslint-config-prettier": "^7.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "file-loader": "^6.2.0",
     "husky": "^4.3.7",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.3",
+    "node-sass": "^6.0.0",
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
+    "sass-loader": "^11.1.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.12.2",
