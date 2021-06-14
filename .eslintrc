@@ -7,9 +7,10 @@
   "rules": {
     "strict": ["error", "never"]
   },
-  "env" : {
+  "env": {
     "browser": true,
     "node": true,
-    "jest": true
+    "jest": true,
+    "es6": true
   }
 }

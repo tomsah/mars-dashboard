@@ -1,0 +1,39 @@
+.gallery-container {
+  overflow: scroll;
+
+  ul {
+    display: flex;
+    left: -100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    transform: translateX(100%);
+    left: -33.33333%;
+    transform: translateX(33.33333%);
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  li {
+    background: white;
+    flex: 1;
+    height: 250px;
+    border: 1px solid black;
+    flex-basis: 33.33333%;
+    padding: 0 10px;
+  }
+
+  img {
+    height: 100%;
+  }
+}
+
+nav {
+  display: flex;
+}
+
+.nav-link-container {
+  justify-content: center;
+  flex: 1 1 100%;
+  display: flex;
+}
