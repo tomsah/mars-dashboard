@@ -22,36 +22,7 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 app.get('/', function (req, res) {
-  // res.send('hello world')
-  Promise.all([
-    fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=10&api_key=${process.env.API_KEY}`,
-    ),
-    fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=10&page=1&api_key=${process.env.API_KEY}`,
-    ),
-    fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=10&page=1&api_key=${process.env.API_KEY}`,
-    ),
-  ])
-    .then(function (responses) {
-      // Get a JSON object from each of the responses
-      return Promise.all(
-        responses.map(function (response) {
-          return response.json()
-        }),
-      )
-    })
-    .then(function (data) {
-      // Log the data to the console
-      // You would do something with both sets of data here
-      console.log(data)
-      res.send({data})
-    })
-    .catch(function (error) {
-      // if there's an error, log it
-      console.log(error)
-    })
+  res.send('HOME PAGE')
 })
 
 const ROVERS = ['curiosity', 'opportunity', 'spirit']
@@ -60,33 +31,41 @@ const roverData = () => {
   ROVERS.forEach((rover) => {
     console.log(rover)
     app.get(`/${rover}`, async (req, res) => {
+      let roverData = {}
       try {
-        Promise.all([
-          fetch(
-            `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=1000&api_key=${process.env.API_KEY}`,
-          ),
-          fetch(
-            `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`,
-          ),
-        ])
-          .then(function (responses) {
-            // Get a JSON object from each of the responses
-            return Promise.all(
-              responses.map(function (response) {
-                console.log('>>>>>', response)
-                return response.json()
-              }),
+        fetch(
+          `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`,
+        )
+          .then((response) => response.json())
+          .then(({photo_manifest}) => {
+            const {
+              name,
+              landing_date,
+              launch_date,
+              status,
+              max_sol,
+              max_date,
+              total_photos,
+            } = photo_manifest
+            const manifest = {
+              name,
+              landing_date,
+              launch_date,
+              status,
+              max_sol,
+              max_date,
+              total_photos,
+            }
+            roverData = {...roverData, manifest}
+            console.log('data', photo_manifest, 'manifest', manifest)
+            return fetch(
+              `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${max_sol}&api_key=${process.env.API_KEY}`,
             )
           })
-          .then(function (data) {
-            // Log the data to the console
-            // You would do something with both sets of data here
-            console.log('data', data)
-            res.send({data})
-          })
-          .catch(function (error) {
-            // if there's an error, log it
-            console.log(error)
+          .then((response) => response.json())
+          .then(({photos}) => {
+            roverData = {...roverData, photos}
+            res.send(roverData)
           })
       } catch (err) {
         console.log('error:', err)

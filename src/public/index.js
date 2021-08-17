@@ -1,64 +1,42 @@
 import './style.scss'
-const body = document.getElementById('root')
-const title = document.createElement('h1')
+const ROVERS = ['curiosity', 'opportunity', 'spirit']
+const container = document.getElementById('root')
 const navElement = document.createElement('nav')
 let mainContainer = document.createElement('div')
 mainContainer.className = 'main-container'
-const ROVERS = ['curiosity', 'opportunity', 'spirit']
+const loader = document.createElement('div')
+loader.innerHTML = 'Loading....'
+
+container.appendChild(loader)
 
 function append(parent, el) {
   return parent.appendChild(el)
 }
 
-let store
 //Fetch Rover info
-async function getRoverData(rover) {
+async function fetchRoverData(rover) {
   await fetch(`http://localhost:3000/${rover}`)
     .then((response) => response.json())
-    .then(({data}) => {
-      console.log(data)
-      getImageAndData(data)
+    .then((data) => {
+      createRoverPage(data)
     })
     .catch((error) => console.log(error))
 }
 
-const titleElm = (name) => {
-  title.innerHTML = name
-  body.appendChild(title)
-}
-
-const getImageAndData = (data) => {
-  console.log('>>', data)
-  let newState = {
-    images: data[0].photos.splice(0, 10),
-    info: data[1].photo_manifest,
+const createRoverPage = (data) => {
+  let state = {
+    images: data.photos.splice(0, 10),
+    info: data.manifest,
   }
-
-  updateState(newState)
-  console.log('lll', newState)
-  titleElm(newState.info.name)
-  const page = RoverPage(newState, newState.info.name)
-  body.appendChild(page)
+  return RoverPage(state)
 }
 
-const updateState = (newState) => {
-  store = {
-    ...store,
-    [newState.info.name]: {...newState},
-  }
-  // console.log('store', store)
-  return store
-}
-
-const RoverPage = (state) => {
+//Rover Image gallery
+const imageGallery = (images) => {
   const ul = document.createElement('ul')
   const galleryContainer = document.createElement('div')
   galleryContainer.className = 'gallery-container'
-  mainContainer.innerHTML = ''
   ul.className = 'gallery'
-  const images = state.images
-  console.log('ddd', state, images)
-
   const imageList = images.map((image) => {
     const li = document.createElement('li')
     const img = document.createElement('img')
@@ -68,10 +46,50 @@ const RoverPage = (state) => {
   })
   imageList.forEach((imageLi) => append(ul, imageLi))
   append(galleryContainer, ul)
-  mainContainer.appendChild(galleryContainer)
-  return mainContainer
+  return galleryContainer
 }
 
+// Rover Info
+const info = (roverInfo) => {
+  console.log(roverInfo)
+  const infoContainer = document.createElement('div')
+  infoContainer.className = 'info-container'
+  //Rover name
+  const roverName = document.createElement('h1')
+  roverName.innerHTML = roverInfo.name
+  //Mission status
+  const missionStatus = document.createElement('h2')
+  missionStatus.innerHTML = `Mission status: ${roverInfo.status}`
+  //Landing date
+  const landingDate = document.createElement('p')
+  landingDate.innerHTML = `Landed on: ${roverInfo.landing_date}`
+  //Launch date
+  const launchDate = document.createElement('p')
+  launchDate.innerHTML = `Launched on ${roverInfo.launch_date}`
+  //Last photo date
+  const lastPhotoDate = document.createElement('p')
+  lastPhotoDate.innerHTML = `Last Photo taken on: ${roverInfo.max_date}`
+
+  infoContainer.appendChild(roverName)
+  infoContainer.appendChild(missionStatus)
+  infoContainer.appendChild(landingDate)
+  infoContainer.appendChild(launchDate)
+  infoContainer.appendChild(lastPhotoDate)
+
+  return infoContainer
+}
+
+// Create Rover page
+const RoverPage = (state) => {
+  container.innerHTML = '' //reset the page
+  const gallery = imageGallery(state.images)
+  const RoverData = info(state.info)
+  mainContainer.appendChild(RoverData)
+  mainContainer.appendChild(gallery)
+  return container.appendChild(mainContainer)
+}
+
+// Create Menu
 const nav = () => {
   const links = ROVERS.map((rover) => {
     const linkContainer = document.createElement('div')
@@ -81,9 +99,7 @@ const nav = () => {
     link.append(linkText)
     link.setAttribute('href', `http://localhost:8080/${rover}`)
     link.onclick = function () {
-      stop.event
-      getRoverData(rover)
-      return false
+      fetchRoverData(rover)
     }
     append(linkContainer, link)
     return linkContainer
@@ -92,14 +108,12 @@ const nav = () => {
 }
 
 const init = () => {
-  console.log('store', store)
   nav()
-  body.appendChild(navElement)
-  body.appendChild(mainContainer)
-  return body
+  document.body.appendChild(navElement)
+  document.body.appendChild(container)
 }
 
 window.onload = function () {
   const roverName = [...window.location.pathname].slice(1).join('')
-  getRoverData(roverName).then(() => init())
+  fetchRoverData(roverName).then(() => init())
 }
