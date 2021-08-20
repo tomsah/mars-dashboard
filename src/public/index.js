@@ -1,5 +1,13 @@
 import './style.scss'
+import curiosityImg from './images/Curiosity.jpeg'
+import opportunityImg from './images/Opportunity.jpeg'
+import spiritImg from './images/Spirit.jpeg'
 const ROVERS = ['curiosity', 'opportunity', 'spirit']
+const roverImg = {
+  Curiosity: curiosityImg,
+  Opportunity: opportunityImg,
+  Spirit: spiritImg,
+}
 const container = document.getElementById('root')
 
 const createUIElement = (element, option, text) => {
@@ -11,7 +19,6 @@ const createUIElement = (element, option, text) => {
 function appendElToParent(parent, el) {
   if (Array.isArray(el)) {
     el.forEach((node) => {
-      console.log('node', node)
       return parent.appendChild(node)
     })
   } else {
@@ -87,13 +94,20 @@ const info = (roverInfo, createUI) => {
     'innerHTML',
     `Last Photo taken on: ${roverInfo.max_date}`,
   )
-  appendElToParent(infoContainer, [
+  const roverImage = createUI('div', 'className', 'rover-image')
+  const image = createUI('img', 'src', roverImg[roverInfo.name])
+  appendElToParent(roverImage, image)
+
+  const roverData = createUI('div', 'className', 'rover-data')
+  appendElToParent(roverData, [
     roverName,
     missionStatus,
     landingDate,
     launchDate,
     lastPhotoDate,
   ])
+
+  appendElToParent(infoContainer, [roverImage, roverData])
 
   return infoContainer
 }
@@ -102,16 +116,19 @@ const info = (roverInfo, createUI) => {
 const RoverPage = (state) => {
   container.innerHTML = '' //reset the page
   const gallery = imageGallery(state.images, createUIElement)
-  const RoverData = info(state.info, createUIElement)
+  const roverData = info(state.info, createUIElement)
 
-  appendElToParent(mainContainer, [RoverData, gallery])
+  appendElToParent(mainContainer, [roverData, gallery])
   return appendElToParent(container, mainContainer)
 }
 
 // Create Menu
-const nav = (navItemList, createUI) => {
+const nav = (navItemList, activePage, createUI) => {
   const links = navItemList.map((rover) => {
     const linkContainer = createUI('div', 'className', 'nav-link-container')
+    activePage === rover
+      ? linkContainer.classList.add('active')
+      : linkContainer.remove('active')
     const link = createUI('a', 'innerHTML', rover)
     link.setAttribute('href', `http://localhost:8080/${rover}`)
     link.onclick = function () {
@@ -123,13 +140,13 @@ const nav = (navItemList, createUI) => {
   return appendElToParent(navElement, links)
 }
 
-const init = () => {
-  nav(ROVERS, createUIElement)
+const init = (roverName) => {
+  nav(ROVERS, roverName, createUIElement)
   document.body.appendChild(navElement)
   document.body.appendChild(container)
 }
 
 window.onload = function () {
   const roverName = [...window.location.pathname].slice(1).join('')
-  fetchRoverData(roverName).then(() => init())
+  fetchRoverData(roverName).then(() => init(roverName))
 }
