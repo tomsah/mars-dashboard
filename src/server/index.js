@@ -29,7 +29,6 @@ const ROVERS = ['curiosity', 'opportunity', 'spirit']
 
 const roverData = () => {
   ROVERS.forEach((rover) => {
-    console.log(rover)
     app.get(`/${rover}`, async (req, res) => {
       let roverData = {}
       try {
@@ -57,7 +56,6 @@ const roverData = () => {
               total_photos,
             }
             roverData = {...roverData, manifest}
-            console.log('data', photo_manifest, 'manifest', manifest)
             return fetch(
               `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${max_sol}&api_key=${process.env.API_KEY}`,
             )
