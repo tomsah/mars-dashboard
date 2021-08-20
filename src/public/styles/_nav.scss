@@ -1,0 +1,53 @@
+nav {
+  overflow: hidden;
+  height: auto;
+  @media screen and (min-width: $tablet) {
+    height: 30px;
+    display: flex;
+    margin-left: -25px;
+  }
+}
+
+.nav-link-container {
+  height: 25px;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid white;
+  text-transform: capitalize;
+  transition: all 0.3s linear;
+  padding: ($padding-sml / 2) 0;
+
+  @media screen and (min-width: $tablet) {
+    height: auto;
+    display: flex;
+    flex: 1 1 100%;
+    transform: skewX(-$skewDeg);
+    transform-origin: bottom;
+  }
+
+  &.active,
+  &:hover {
+    background: white;
+    a {
+      color: black;
+      font-weight: bold;
+    }
+  }
+
+  a {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    color: white;
+    position: absolute;
+    align-items: center;
+    text-decoration: none;
+    justify-content: center;
+    transition: all 0.3s linear;
+    @media screen and (min-width: $tablet) {
+      transform: skewX($skewDeg);
+    }
+  }
+}

@@ -1,0 +1,38 @@
+.gallery-container {
+  width: 100%;
+  overflow: scroll;
+  @media screen and (min-width: $sml-desktop) {
+    bottom: 0;
+    position: fixed;
+  }
+
+  ul {
+    margin: 0;
+    left: -100%;
+    display: flex;
+    list-style: none;
+    left: -33.33333%;
+    position: relative;
+    padding: $padding-sml 0;
+    transform: translateX(100%);
+    transform: translateX(33.33333%);
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  li {
+    flex: 1;
+    height: 250px;
+    flex-basis: 33.33333%;
+    padding: 0 $padding-sml;
+    @media screen and (min-width: $tablet) {
+      height: 300px;
+    }
+  }
+
+  img {
+    height: 100%;
+    display: block;
+    border-radius: $border-radius;
+    border: white 2px solid;
+  }
+}

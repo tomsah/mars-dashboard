@@ -1,0 +1,26 @@
+.info-container {
+  color: black;
+  overflow: hidden;
+  position: relative;
+  margin: $margin-sml;
+  border-radius: $border-radius;
+}
+
+.rover-data {
+  padding: $padding-sml;
+  background-color: rgba(255, 255, 255, 0.8);
+  @media screen and (min-width: $tablet) {
+    top: 0;
+    bottom: 0;
+    width: 25%;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.rover-image {
+  display: flex;
+  img {
+    width: 100%;
+  }
+}
