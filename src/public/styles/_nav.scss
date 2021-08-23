@@ -1,6 +1,10 @@
 nav {
-  overflow: hidden;
+  top: 0;
+  z-index: 1;
   height: auto;
+  overflow: hidden;
+  position: sticky;
+  background: black;
   @media screen and (min-width: $tablet) {
     height: 30px;
     display: flex;

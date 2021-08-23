@@ -33,8 +33,16 @@ const loader = createUIElement('div', 'innerHTML', 'Loading....')
 appendElToParent(container, loader)
 
 //Fetch Rover info
-async function fetchRoverData(rover) {
-  await fetch(`http://localhost:3000/${rover}`)
+async function fetchData(pathName) {
+  if (pathName === '/') {
+    await fetch('http://localhost:3000')
+      .then((response) => response.json())
+      .then((data) => {
+        homePage(data, createUIElement)
+      })
+      .catch((error) => console.log(error))
+  }
+  await fetch(`http://localhost:3000/${pathName}`)
     .then((response) => response.json())
     .then((data) => {
       createRoverPage(data)
@@ -50,10 +58,33 @@ const createRoverPage = (data) => {
   return RoverPage(state)
 }
 
+const homePage = (image, createUI) => {
+  container.innerHTML = '' //reset the page
+  console.log(image)
+  const homePageContainer = createUI('div', 'className', 'homepage-container')
+  const titleContainer = createUI('div', 'className', 'image-data-title')
+  const title = createUI('h1', 'innerHTML', 'Photo of the day')
+  const imageDate = createUI('span', 'innerHTML', image.date)
+  console.log(imageDate)
+  appendElToParent(titleContainer, [title, imageDate])
+  const imageOfTheDay = createUI('img', 'src', image.hdurl)
+  const imageData = createUI('div', 'className', 'image-data')
+  const imageExplanation = createUI(
+    'div',
+    'className',
+    'image-data-explanation',
+  )
+  imageExplanation.innerHTML = image.explanation
+  appendElToParent(imageData, [titleContainer, imageExplanation])
+  appendElToParent(homePageContainer, [imageOfTheDay, imageData])
+  appendElToParent(mainContainer, homePageContainer)
+  return appendElToParent(container, homePageContainer)
+}
+
 //Rover Image gallery
 const imageGallery = (images, createUI) => {
-  const ul = createUI('ul', 'className', 'gallery')
   const galleryContainer = createUI('div', 'className', 'gallery-container')
+  const ul = createUI('ul', 'className', 'gallery')
   const imageList = images.map((image) => {
     const li = createUI('li')
     const img = createUI('img', 'src', image.img_src)
@@ -124,15 +155,24 @@ const RoverPage = (state) => {
 
 // Create Menu
 const nav = (navItemList, activePage, createUI) => {
-  const links = navItemList.map((rover) => {
+  const links = navItemList.map((linkText) => {
     const linkContainer = createUI('div', 'className', 'nav-link-container')
-    activePage === rover
+    activePage === linkText
       ? linkContainer.classList.add('active')
       : linkContainer.remove('active')
-    const link = createUI('a', 'innerHTML', rover)
-    link.setAttribute('href', `http://localhost:8080/${rover}`)
+    const link = createUI(
+      'a',
+      'innerHTML',
+      linkText === '/' ? 'Home' : linkText,
+    )
+    link.setAttribute(
+      'href',
+      linkText === '/'
+        ? 'http://localhost:8080/'
+        : `http://localhost:8080/${linkText}`,
+    )
     link.onclick = function () {
-      fetchRoverData(rover)
+      fetchData(linkText)
     }
     appendElToParent(linkContainer, link)
     return linkContainer
@@ -141,12 +181,17 @@ const nav = (navItemList, activePage, createUI) => {
 }
 
 const init = (roverName) => {
-  nav(ROVERS, roverName, createUIElement)
+  const navLinks = ['/', ...ROVERS]
+  nav(navLinks, roverName, createUIElement)
   document.body.appendChild(navElement)
   document.body.appendChild(container)
 }
 
 window.onload = function () {
-  const roverName = [...window.location.pathname].slice(1).join('')
-  fetchRoverData(roverName).then(() => init(roverName))
+  console.log(window.location)
+  const pathName =
+    [...window.location.pathname].length > 1
+      ? [...window.location.pathname].slice(1).join('')
+      : window.location.pathname
+  fetchData(pathName).then(() => init(pathName))
 }

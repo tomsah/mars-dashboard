@@ -32,7 +32,12 @@
   img {
     height: 100%;
     display: block;
-    border-radius: $border-radius;
+    min-width: 250px;
+    background: lightgray;
     border: white 2px solid;
+    border-radius: $border-radius;
+    @media screen and (min-width: $tablet) {
+      height: 250px;
+    }
   }
 }

@@ -22,7 +22,9 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 app.get('/', function (req, res) {
-  res.send('HOME PAGE')
+  fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`)
+    .then((response) => response.json())
+    .then((data) => res.send(data))
 })
 
 const ROVERS = ['curiosity', 'opportunity', 'spirit']
