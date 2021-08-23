@@ -24,6 +24,7 @@
     "setup": "npm install && npm run validate",
     "server": "node ./src/server/index.js",
     "server:dev": "nodemon ./src/server/index.js",
+    "start": "npm-run-all --parallel server build",
     "test": "jest --no-cache",
     "test:watch": "jest --watch",
     "validate": "npm-run-all --parallel check-format test build",
