@@ -18,5 +18,7 @@ node_modules/
 .vscode/
 #compress files
 *.tgz
-# local files
-starter-files/
+#dist generated files
+dist/bundle.js
+dist/images/*
+
