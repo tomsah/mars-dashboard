@@ -32,6 +32,6 @@ https://yarnpkg.com/lang/en/docs/install
    this.
 4. In your cloned repo, create a `.env` files and add you API_KEY =>
    `API_KEY=XXXX`
-5. Run `yarn start` in your terminal and go to `http:localhost:3000` to check
+5. Run `yarn start` in your terminal and go to `http:localhost:8080` to check
    that your app is working. If you don't see an image on the page, check that
    your api key is set up correctly.
