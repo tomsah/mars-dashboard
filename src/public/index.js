@@ -2,6 +2,7 @@ import './style.scss'
 import curiosityImg from './images/Curiosity.jpeg'
 import opportunityImg from './images/Opportunity.jpeg'
 import spiritImg from './images/Spirit.jpeg'
+import {fromJS} from 'immutable'
 const ROVERS = ['curiosity', 'opportunity', 'spirit']
 const roverImg = {
   Curiosity: curiosityImg,
@@ -51,21 +52,22 @@ async function fetchData(pathName) {
 }
 
 const createRoverPage = (data) => {
-  let state = {
+  //convert to an immutableJS object
+  let state = fromJS({
     images: data.photos.splice(0, 10),
     info: data.manifest,
-  }
+  })
+
   return RoverPage(state)
 }
 
 const homePage = (image, createUI) => {
   container.innerHTML = '' //reset the page
-  console.log(image)
   const homePageContainer = createUI('div', 'className', 'homepage-container')
   const titleContainer = createUI('div', 'className', 'image-data-title')
   const title = createUI('h1', 'innerHTML', 'Photo of the day')
   const imageDate = createUI('span', 'innerHTML', image.date)
-  console.log(imageDate)
+
   appendElToParent(titleContainer, [title, imageDate])
   const imageOfTheDay = createUI('img', 'src', image.hdurl)
   const imageData = createUI('div', 'className', 'image-data')
@@ -87,11 +89,12 @@ const imageGallery = (images, createUI) => {
   const ul = createUI('ul', 'className', 'gallery')
   const imageList = images.map((image) => {
     const li = createUI('li')
-    const img = createUI('img', 'src', image.img_src)
+    const imgPath = image.get('img_src')
+    const img = createUI('img', 'src', imgPath)
     appendElToParent(li, img)
     return li
   })
-  appendElToParent(ul, imageList)
+  appendElToParent(ul, imageList.toJS())
   appendElToParent(galleryContainer, ul)
   return galleryContainer
 }
@@ -100,30 +103,30 @@ const imageGallery = (images, createUI) => {
 const info = (roverInfo, createUI) => {
   const infoContainer = createUI('div', 'className', 'info-container')
   //Rover name
-  const roverName = createUI('h1', 'innerHTML', roverInfo.name)
+  const roverName = createUI('h1', 'innerHTML', roverInfo.getIn(['name']))
   //Mission status
   const missionStatus = createUI(
     'h2',
     'innerHTML',
-    `Mission status: ${roverInfo.status}`,
+    `Mission status: ${roverInfo.getIn(['status'])}`,
   )
   //Landing date
   const landingDate = createUI(
     'p',
     'innerHTML',
-    `Landed on: ${roverInfo.landing_date}`,
+    `Landed on: ${roverInfo.getIn(['landing_date'])}`,
   )
   //Launch date
   const launchDate = createUI(
     'p',
     'innerHTML',
-    `Launched on ${roverInfo.launch_date}`,
+    `Launched on ${roverInfo.getIn(['launch_date'])}`,
   )
   //Last photo date
   const lastPhotoDate = createUI(
     'p',
     'innerHTML',
-    `Last Photo taken on: ${roverInfo.max_date}`,
+    `Last Photo taken on: ${roverInfo.getIn(['max_date'])}`,
   )
   const roverImage = createUI('div', 'className', 'rover-image')
   const image = createUI('img', 'src', roverImg[roverInfo.name])
@@ -146,8 +149,10 @@ const info = (roverInfo, createUI) => {
 // Create Rover page
 const RoverPage = (state) => {
   container.innerHTML = '' //reset the page
-  const gallery = imageGallery(state.images, createUIElement)
-  const roverData = info(state.info, createUIElement)
+  const images = state.getIn(['images'])
+  const roverInfo = state.getIn(['info'])
+  const gallery = imageGallery(images, createUIElement)
+  const roverData = info(roverInfo, createUIElement)
 
   appendElToParent(mainContainer, [roverData, gallery])
   return appendElToParent(container, mainContainer)
@@ -188,7 +193,6 @@ const init = (roverName) => {
 }
 
 window.onload = function () {
-  console.log(window.location)
   const pathName =
     [...window.location.pathname].length > 1
       ? [...window.location.pathname].slice(1).join('')
