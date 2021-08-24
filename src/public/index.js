@@ -53,7 +53,7 @@ async function fetchData(pathName) {
 
 const createRoverPage = (data) => {
   //convert to an immutableJS object
-  let state = fromJS({
+  const state = fromJS({
     images: data.photos.splice(0, 10),
     info: data.manifest,
   })
@@ -129,7 +129,7 @@ const info = (roverInfo, createUI) => {
     `Last Photo taken on: ${roverInfo.getIn(['max_date'])}`,
   )
   const roverImage = createUI('div', 'className', 'rover-image')
-  const image = createUI('img', 'src', roverImg[roverInfo.name])
+  const image = createUI('img', 'src', roverImg[roverInfo.getIn(['name'])])
   appendElToParent(roverImage, image)
 
   const roverData = createUI('div', 'className', 'rover-data')
